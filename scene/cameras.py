@@ -40,7 +40,9 @@ class Camera(nn.Module):
         self.image_width = self.original_image.shape[2]
         self.image_height = self.original_image.shape[1]
 
+        self.is_masked = None
         if gt_alpha_mask is not None:
+            self.is_masked = (gt_alpha_mask.to(self.data_device) == 0).expand(*image.shape)  # True = masked pixel
             self.original_image *= gt_alpha_mask.to(self.data_device)
         else:
             self.original_image *= torch.ones((1, self.image_height, self.image_width), device=self.data_device)
